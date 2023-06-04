@@ -48,24 +48,32 @@ public class symboltable {
         try (BufferedReader reader = new BufferedReader(new FileReader("white_space_removed.asm"))) {
             String line;
             int j=1;
-            int count=16;
-            while ((line = reader.readLine()) != null) {
-                    if(!z.containsKey(line) && line.startsWith("@")){
-                        z.put(line.substring(1,line.length()),count);
-                        count+=1;
-                    }    
-                    if(!z.containsKey(line) && line.startsWith("(")){
+
+            while ((line = reader.readLine()) != null) {   
+                    if(line.startsWith("(")){
                         z.put(line.substring(1,line.length()-1),j+1);
                     }
                     j+=1;
-
+                    
             }
+            reader.close();
+            try (BufferedReader r = new BufferedReader(new FileReader("white_space_removed.asm"))) {
+            String l;
+            int count=16;
+            while ((l = r.readLine()) != null) {
+                if(!z.containsKey(l.substring(1,l.length())) && l.startsWith("@") ){
+                    z.put(l.substring(1,l.length()),count);
+                    count+=1;
+                }   
+            }
+
             }
             
              catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return z;
+    }
     }
 
     private static void writetofile(LinkedHashMap<String,Integer> u) throws IOException{

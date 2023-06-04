@@ -1,4 +1,4 @@
-R0 : 19
+R0 : 0
 R1 : 1
 R2 : 2
 R3 : 3
@@ -21,7 +21,7 @@ LCL : 1
 ARG : 2
 THIS : 3
 THAT : 4
-i : 24
-sum : 23
-LOOP : 25
-STOP : 20
+LOOP : 6
+i : 16
+sum : 17
+STOP : 18
