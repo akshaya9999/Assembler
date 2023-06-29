@@ -48,10 +48,13 @@ public class symboltable {
         try (BufferedReader reader = new BufferedReader(new FileReader("white_space_removed.asm"))) {
             String line;
             int j=1;
+            int k=1;
 
             while ((line = reader.readLine()) != null) {   
                     if(line.startsWith("(")){
-                        z.put(line.substring(1,line.length()-1),j+1);
+                    
+                        z.put(line.substring(1,line.length()-1),j-k);
+                        k+=1;
                     }
                     j+=1;
                     
@@ -61,7 +64,7 @@ public class symboltable {
             String l;
             int count=16;
             while ((l = r.readLine()) != null) {
-                if(!z.containsKey(l.substring(1,l.length())) && l.startsWith("@") ){
+                if(!z.containsKey(l.substring(1,l.length())) && l.startsWith("@") && !Character.isDigit(l.charAt(1))){
                     z.put(l.substring(1,l.length()),count);
                     count+=1;
                 }   

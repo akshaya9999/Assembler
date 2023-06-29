@@ -21,7 +21,7 @@ LCL : 1
 ARG : 2
 THIS : 3
 THAT : 4
-LOOP : 6
-i : 16
-sum : 17
-STOP : 18
+LOOP : 10
+INFINITE_LOOP : 23
+counter : 16
+address : 17
