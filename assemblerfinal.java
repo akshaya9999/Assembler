@@ -6,17 +6,21 @@ import java.io.IOException;
 import java.util.*;
 import java.io.FileWriter;
 
+// demo code
+
 public class assemblerfinal {
 
         public static void main(String[] args) throws IOException {
-            nowhitespace();
+            nowhitespace();//remove white spaces
+            
             LinkedHashMap<String, Integer> x;//symboltable
             LinkedHashMap<String, Integer> y ;
             x=predefined();
             y=symbolfile(x);
             writetofile(y);
-            ArrayList<String> l=ReadFile("/home/akshaya/Documents/assembler/white_space_removed.asm");
-            givetoaorc(l);
+            LinkedHashMap<String, String> z ;
+            z=cinstructiontable();
+            givetoaorc(y,z);//a and c instruction
         }
 
     private static void nowhitespace() {
@@ -150,27 +154,145 @@ public class assemblerfinal {
 
 
     }
-    private static void givetoaorc(ArrayList<String> x){
+    private static LinkedHashMap<String,String> cinstructiontable(){
+            LinkedHashMap<String,String> cinsttable=new LinkedHashMap<String,String>();
+            cinsttable.put("NULL", "000");
+            cinsttable.put("M", "001");
+            cinsttable.put("D", "010");
+            cinsttable.put("MD", "011");
+            cinsttable.put("DM", "011");
+            cinsttable.put("A", "100");
+            cinsttable.put("AM", "101");
+            cinsttable.put("AD", "110");
+            cinsttable.put("AMD", "111");
+            cinsttable.put("0", "0101010");
+            cinsttable.put("1", "0111111");
+            cinsttable.put("-1", "0111010");
+            cinsttable.put("D", "0001100");
+            cinsttable.put("A", "0110000");
+            cinsttable.put("M", "1110000");
+            cinsttable.put("!D", "0001101");
+            cinsttable.put("!A", "0110001");
+            cinsttable.put("!M", "1110001");
+            cinsttable.put("-D", "0001111");
+            cinsttable.put("-A", "0110011");
+            cinsttable.put("-M", "1110011");
+            cinsttable.put("D+1", "0011111");
+            cinsttable.put("A+1", "0110111");
+            cinsttable.put("M+1", "1110111");
+            cinsttable.put("D-1", "0001110");
+            cinsttable.put("A-1", "0110010");
+            cinsttable.put("M-1", "1110010");
+            cinsttable.put("D+A", "0000010");
+            cinsttable.put("D+M", "1000010");
+            cinsttable.put("D-A", "0010011");
+            cinsttable.put("D-M", "1010011");
+            cinsttable.put("A-D", "0000111");
+            cinsttable.put("M-D", "1000111");
+            cinsttable.put("D&A", "0000000");
+            cinsttable.put("D&M", "1000000");
+            cinsttable.put("D|A", "0010101");
+            cinsttable.put("D|M", "1010101");
+            cinsttable.put("NULL", "000");
+            cinsttable.put("JGT", "001");
+            cinsttable.put("JEQ", "010");
+            cinsttable.put("JGE", "011");
+            cinsttable.put("JLT", "100");
+            cinsttable.put("JNE", "101");
+            cinsttable.put("JLE", "110");
+            cinsttable.put("JMP", "111");
+            return cinsttable;
+
+    }
+  
+    
+        
+    private static void givetoaorc(LinkedHashMap<String, Integer> y,LinkedHashMap<String, String> z) throws IOException{
+        ArrayList<String> x=ReadFile("/home/akshaya/Documents/assembler/white_space_removed.asm");
+        File file = new File("/home/akshaya/Documents/assembler/finalasmfile.asm");
+        FileWriter myWriter = new FileWriter(file);
         for (String line:x){
             char firstelement=line.charAt(0);
             if (firstelement=='@'){
-                ainstruction(line.substring(1,line.length()));
+                String k=line.substring(1,line.length());
+                if(Character.isDigit(k.charAt(0))){
+                    Long no=Long.parseLong(k);
+                    String binaryno=Long.toBinaryString(no);
+                    while(binaryno.length()<15 ){
+                        binaryno="0"+binaryno;
+                    }
+                    myWriter.write("0"+binaryno);
+                    myWriter.write(System.lineSeparator());
 
-            // }
-            // else{
+                }
+                else{
+                    Integer h=y.get(k);
+                    String binaryno=Integer.toBinaryString(h);
+                    while(binaryno.length()<15 ){
+                        binaryno="0"+binaryno;
+                    }
+                    myWriter.write("0"+binaryno);
+                    myWriter.write(System.lineSeparator());
+                }
+            
+            }
+            else{//c instruction
+                List<String> a1 = Arrays.asList("M", "!M", "-M", "M+1", "M-1", "D+M", "D-M", "M-D", "D&M", "D|M");
+            String toWrite = "";
+            
+            if (line.contains("=") && line.contains(";")) {
+                String[] whole = line.split("=");
+                String dest = whole[0];
+                String[] withoutEqual = whole[1].split(";");
+                String comp = withoutEqual[0];
+                String jump = withoutEqual[1];
 
-            // }
-        }
+                if (a1.contains(comp)) {
+                    toWrite = "1111" + z.get(comp);
+                } else {
+                    toWrite = "1110" + z.get(comp);
+                }
+                
+                toWrite += z.get(dest);
+                toWrite += z.get(jump);
+                
+            } else if (line.contains("=")) {
+                String[] whole = line.split("=");
+                String dest = whole[0];
+                String comp = whole[1];
+                
+                if (a1.contains(comp)) {
+                    toWrite = "1111" + z.get(comp);
+                } else {
+                    toWrite = "1110" + z.get(comp);
+                }
+                
+                toWrite += z.get(dest);
+                toWrite += "000";
+            } else if (line.contains(";")) {
+                String[] whole = line.split(";");
+                String comp = whole[0];
+                String jump = whole[1];
+                
+                if (a1.contains(comp)) {
+                    toWrite = "1111" + z.get(comp);
+                } else {
+                    toWrite = "1110" + z.get(comp);
+                }
+                
+                toWrite += "000";
+                toWrite += z.get(jump);
+            }
+            
+            myWriter.write(toWrite);
+            myWriter.write(System.lineSeparator());
+        }  
     
-    }
-
-    }
-    private static String ainstruction(String k){
-        
-        return k;
-
-    }
+    
 }
 
-    
+myWriter.close();
 
+}
+
+}
